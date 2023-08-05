@@ -4,6 +4,9 @@ import board
 import time
 from adafruit_motorkit import MotorKit
 from evdev import InputDevice, categorize, ecodes      
+from wpilib_kinematics.wpilib.geometry import *
+from wpilib_kinematics.wpilib.kinematics import *
+from wpilib_kinematics.wpilib.kinematics.swerve import *
 power = MotorKit(i2c=board.I2C())            
 gamepad = InputDevice('/dev/input/event2')    
 left_joystick_x = 128
@@ -44,12 +47,31 @@ def get_controller_input(left_joystick_x, left_joystick_y, right_joystick_x, rig
 
         return (left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y) #return known values
                 
-def define_values():
+def define_values(left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y):
     #turn the values from the controller into desired values for the swerve algorithm
+    global vx
+    global vy
+    global omega
+
 
 def swerve_algorithm():
-    global speed
-    speed = (255 - math.sqrt(math.pow(left_joystick_x, 2) + math.pow(left_joystick_y, 2)))/255
+    MAXIMUM_WHEEL_SPEED = 5
+
+    wheellocation_1 = Translation2d(0.5,0.5) #positions of all the modules
+    wheellocation_2 = Translation2d(-0.5,0.5)
+    wheellocation_3 = Translation2d(0.5,-0.5)
+    wheellocation_4 = Translation2d(-0.5,-0.5)
+
+    chassis_speed =  ChassisSpeeds(vx, vy, omega) #desired speed and direction
+    centreofrotation = Translation2d(0, 0) #centre of rotation
+
+    swerve_kinematics = SwerveDriveKinematics(wheellocation_1, wheellocation_2, wheellocation_3, wheellocation_4)
+    global module_state
+    module_state = swerve_kinematics.toSwerveModuleStates(chassis_speed, centreofrotation) 
+    #determines heading for each of the wheels
+    module_state = swerve_kinematics.desaturateWheelSpeeds(module_state, MAXIMUM_WHEEL_SPEED)
+
+
 
 def power_motors():
     #power motors to the speed
@@ -63,7 +85,7 @@ if __name__ == '__main__':
         for event in gamepad.read_loop(): #main loop based on controller update
             left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y = get_controller_input(left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y)
             print(left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y) # for testing
-            define_values()
+            define_values(left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y)
             swerve_algorithm()
             power_motors()
     finally:
