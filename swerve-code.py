@@ -44,6 +44,8 @@ def get_controller_input(left_joystick_x, left_joystick_y, right_joystick_x, rig
 
         return (left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y) #return known values
                 
+def define_values():
+    #turn the values from the controller into desired values for the swerve algorithm
 
 def swerve_algorithm():
     global speed
@@ -61,9 +63,8 @@ if __name__ == '__main__':
         for event in gamepad.read_loop(): #main loop based on controller update
             left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y = get_controller_input(left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y)
             print(left_joystick_x, left_joystick_y, right_joystick_x, right_joystick_y) # for testing
-
+            define_values()
             swerve_algorithm()
-            power.motor1.throttle = speed
-            # power_motors()
+            power_motors()
     finally:
-        power.motor1.throttle = 0
+        power.motor1.throttle = 0 #turn off power for all motors if no input
