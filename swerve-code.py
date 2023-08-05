@@ -55,7 +55,7 @@ def define_values(left_joystick_x, left_joystick_y, right_joystick_x, right_joys
 
 
 def swerve_algorithm():
-    MAXIMUM_WHEEL_SPEED = 5
+    MAXIMUM_WHEEL_SPEED = (((96*3.141592)/1000)*150)/60 #~0.75m/s kind of slow
 
     wheellocation_1 = Translation2d(0.5,0.5) #positions of all the modules
     wheellocation_2 = Translation2d(-0.5,0.5)
@@ -69,7 +69,8 @@ def swerve_algorithm():
     global module_state
     module_state = swerve_kinematics.toSwerveModuleStates(chassis_speed, centreofrotation) 
     #determines heading for each of the wheels
-    module_state = swerve_kinematics.desaturateWheelSpeeds(module_state, MAXIMUM_WHEEL_SPEED)
+    module_state = swerve_kinematics.normalizeWheelSpeeds(module_state, MAXIMUM_WHEEL_SPEED)
+    #scales all wheel speeds down relative to max velocity
 
 
 
@@ -77,6 +78,10 @@ def power_motors():
     #power motors to the speed
     #turn the turning motors until they reach the right position
     #values will be given by swerve algorithm
+    module_state[0]
+    module_state[1]
+    module_state[2]
+    module_state[3]
     while True:
         break
 
